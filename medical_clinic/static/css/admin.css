@@ -1,0 +1,85 @@
+:root {
+  --dc-accent: #2563eb;
+  --dc-accent-dark: #1d4ed8;
+  --dc-bg: #0f172a;
+}
+
+#header {
+  background: var(--dc-bg);
+}
+
+#header a:link,
+#header a:visited,
+#branding h1 a:link,
+#branding h1 a:visited {
+  color: #ffffff;
+}
+
+#branding h1 {
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+div.breadcrumbs {
+  background: #111827;
+}
+
+.module h2,
+.module caption,
+.inline-group h2 {
+  background: var(--dc-accent);
+}
+
+a:link,
+a:visited {
+  color: var(--dc-accent-dark);
+}
+
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+a.button {
+  background: var(--dc-accent);
+  border-color: var(--dc-accent);
+  border-radius: 10px;
+  font-weight: 700;
+  padding: 8px 14px;
+}
+
+.button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+.submit-row input:hover,
+a.button:hover {
+  background: var(--dc-accent-dark);
+  border-color: var(--dc-accent-dark);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.actions label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.actions select {
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  padding: 8px 12px;
+  background: #ffffff;
+}
+
+.actions .button,
+.actions input[type="submit"],
+.actions button.button {
+  padding: 9px 16px;
+}

@@ -4,7 +4,8 @@ from django.utils import timezone
 from datetime import date, time, timedelta
 
 from .forms import AppointmentForm
-from .models import Appointment
+from .models import Appointment, SmsMessage
+from .sms import send_appointment_closed, send_appointment_confirmation
 
 # Create your tests here.
 
@@ -94,3 +95,43 @@ class AppointmentFormValidationTests(TestCase):
             }
         )
         self.assertTrue(form.is_valid())
+
+
+class AppointmentSmsTests(TestCase):
+    def test_confirmation_sms_is_logged_and_timestamped(self):
+        d = timezone.localdate() + timedelta(days=1)
+        appt = Appointment.objects.create(
+            full_name="Test",
+            phone="999",
+            email="t@example.com",
+            date_of_birth=date(2000, 1, 1),
+            preferred_date=d,
+            preferred_time=time(10, 0),
+        )
+
+        sms = send_appointment_confirmation(appt)
+        self.assertIsNotNone(sms)
+        appt.refresh_from_db()
+        self.assertIsNotNone(appt.confirmation_sms_sent_at)
+        self.assertEqual(SmsMessage.objects.count(), 1)
+        self.assertEqual(sms.kind, SmsMessage.Kind.APPOINTMENT_CONFIRMATION)
+        self.assertEqual(sms.status, SmsMessage.Status.SENT)
+
+    def test_closure_sms_is_logged_and_timestamped(self):
+        d = timezone.localdate() + timedelta(days=1)
+        appt = Appointment.objects.create(
+            full_name="Test",
+            phone="999",
+            email="t@example.com",
+            date_of_birth=date(2000, 1, 1),
+            preferred_date=d,
+            preferred_time=time(10, 0),
+        )
+
+        sms = send_appointment_closed(appt)
+        self.assertIsNotNone(sms)
+        appt.refresh_from_db()
+        self.assertIsNotNone(appt.closure_sms_sent_at)
+        self.assertEqual(SmsMessage.objects.count(), 1)
+        self.assertEqual(sms.kind, SmsMessage.Kind.APPOINTMENT_CLOSED)
+        self.assertEqual(sms.status, SmsMessage.Status.SENT)

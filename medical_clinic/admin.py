@@ -1,7 +1,15 @@
+from django import forms
 from django.contrib import admin
+from django.utils.html import format_html
+from django.db import models
 from django.utils import timezone
+from .models import Appointment, CaseStudy
+from .sms import send_appointment_closed
 
-from .models import Appointment
+
+admin.site.site_header = "DoClinic Admin"
+admin.site.site_title = "DoClinic Admin"
+admin.site.index_title = "Clinic Management"
 
 
 class AppointmentDayFilter(admin.SimpleListFilter):
@@ -33,6 +41,24 @@ class AppointmentDayFilter(admin.SimpleListFilter):
         return queryset
 
 
+class AppointmentStatusFilter(admin.SimpleListFilter):
+    title = "status"
+    parameter_name = "status_tab"
+
+    def lookups(self, request, model_admin):
+        return [
+            (Appointment.Status.OPEN, "Open"),
+            (Appointment.Status.COMPLETED, "Completed"),
+            (Appointment.Status.NO_SHOW, "No-show"),
+        ]
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if not value:
+            return queryset
+        return queryset.filter(status=value)
+
+
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
     date_hierarchy = "preferred_date"
@@ -44,10 +70,121 @@ class AppointmentAdmin(admin.ModelAdmin):
         "date_of_birth",
         "preferred_date",
         "preferred_time",
+        "status_badge",
+        "closed_at",
         "created_at",
     )
-    list_filter = (AppointmentDayFilter, "preferred_date", "created_at")
+    list_filter = (AppointmentStatusFilter, AppointmentDayFilter, "preferred_date", "created_at")
     search_fields = ("full_name", "phone", "email", "reason", "message")
     readonly_fields = ("created_at",)
     ordering = ("preferred_date", "preferred_time", "-created_at")
     list_per_page = 50
+
+    @admin.display(description="Status")
+    def status_badge(self, obj):
+        if obj.status == Appointment.Status.COMPLETED:
+            return format_html(
+                '<span style="display:inline-block;padding:2px 10px;border-radius:9999px;background:#dcfce7;color:#166534;font-weight:700;">{}</span>',
+                "Completed",
+            )
+        if obj.status == Appointment.Status.NO_SHOW:
+            return format_html(
+                '<span style="display:inline-block;padding:2px 10px;border-radius:9999px;background:#fee2e2;color:#991b1b;font-weight:700;">{}</span>',
+                "No-show",
+            )
+        return format_html(
+            '<span style="display:inline-block;padding:2px 10px;border-radius:9999px;background:#dbeafe;color:#1e40af;font-weight:700;">{}</span>',
+            "Open",
+        )
+
+    actions = ["mark_completed_and_notify", "mark_no_show"]
+
+    def save_model(self, request, obj, form, change):
+        previous_status = None
+        if change and obj.pk:
+            previous_status = Appointment.objects.filter(pk=obj.pk).values_list("status", flat=True).first()
+
+        if obj.status in {Appointment.Status.COMPLETED, Appointment.Status.NO_SHOW} and not obj.closed_at:
+            obj.closed_at = timezone.now()
+
+        super().save_model(request, obj, form, change)
+
+        if previous_status and previous_status != obj.status and obj.status == Appointment.Status.COMPLETED:
+            send_appointment_closed(obj)
+
+    @admin.action(description="Mark completed and send closing SMS")
+    def mark_completed_and_notify(self, request, queryset):
+        now = timezone.now()
+        updated = 0
+        for appt in queryset:
+            if appt.status != Appointment.Status.COMPLETED:
+                appt.status = Appointment.Status.COMPLETED
+                appt.closed_at = appt.closed_at or now
+                appt.save(update_fields=["status", "closed_at"])
+                send_appointment_closed(appt)
+                updated += 1
+        self.message_user(request, f"Updated {updated} appointment(s).")
+
+    @admin.action(description="Mark as no-show")
+    def mark_no_show(self, request, queryset):
+        now = timezone.now()
+        updated = 0
+        for appt in queryset:
+            if appt.status != Appointment.Status.NO_SHOW:
+                appt.status = Appointment.Status.NO_SHOW
+                appt.closed_at = appt.closed_at or now
+                appt.save(update_fields=["status", "closed_at"])
+                updated += 1
+        self.message_user(request, f"Updated {updated} appointment(s).")
+
+
+@admin.register(CaseStudy)
+class CaseStudyAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.DateField: {"widget": forms.DateInput(attrs={"type": "date"})},
+    }
+    date_hierarchy = "occurred_on"
+    list_display = (
+        "id",
+        "image_preview",
+        "title",
+        "tag",
+        "occurred_on",
+        "is_published",
+        "sort_order",
+        "updated_at",
+    )
+    list_filter = ("is_published", "tag")
+    search_fields = ("title", "tag", "summary")
+    list_editable = ("sort_order", "is_published")
+    ordering = ("sort_order", "-occurred_on", "-created_at")
+
+    readonly_fields = ("image_preview",)
+    fields = (
+        "title",
+        "tag",
+        "occurred_on",
+        "image",
+        "image_url",
+        "image_preview",
+        "summary",
+        "is_published",
+        "sort_order",
+    )
+
+    @admin.display(description="Image")
+    def image_preview(self, obj):
+        src = None
+        if getattr(obj, "image", None):
+            try:
+                src = obj.image.url
+            except ValueError:
+                src = None
+        if not src and getattr(obj, "image_url", None):
+            src = obj.image_url
+        if not src:
+            return "-"
+        return format_html(
+            '<img src="{}" style="height:48px;width:80px;object-fit:contain;background:#0f172a;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:4px;" />',
+            src,
+        )

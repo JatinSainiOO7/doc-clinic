@@ -6,31 +6,21 @@
 {% block content %}
 <div class="bg-white py-12 sm:py-16 lg:py-24">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Page Header -->
         <div class="text-center mb-10 sm:mb-14 lg:mb-16">
             <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900">Meet Our Lead Physician</h1>
-            <p
-                class="text-base sm:text-lg lg:text-xl text-slate-600 mt-4 bg-slate-100 px-3 py-2 sm:px-4 sm:py-2.5 inline-block rounded-lg">
-                Dr. Alexander Rivers</p>
+            <p class="text-base sm:text-lg lg:text-xl text-slate-600 mt-4 bg-slate-100 px-3 py-2 sm:px-4 sm:py-2.5 inline-block rounded-lg">Dr. Alexander Rivers</p>
         </div>
-        from django.conf import settings
-        print(settings.DATABASES)
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-            <!-- Left Column: Doctor's Image and Quick Info -->
             <div class="lg:col-span-1 space-y-6 sm:space-y-8">
                 <div class="relative rounded-xl overflow-hidden shadow-lg bg-slate-100 aspect-[4/5]">
-                    <img src="{% static 'images/doctor.jpg' %}" alt="Dr. Alexander Rivers"
-                        class="w-full h-full object-cover">
+                    <img src="{% static 'images/doctor.jpg' %}" alt="Dr. Alexander Rivers" class="w-full h-full object-cover">
                 </div>
                 <div class="bg-slate-50 p-4 sm:p-6 rounded-xl border border-slate-200">
                     <h3 class="text-xl sm:text-2xl font-bold text-slate-800 mb-4">Specializations</h3>
                     <ul class="space-y-2 text-sm sm:text-base text-slate-600">
-                        <li class="flex items-center"><i class="fas fa-heartbeat text-blue-500 mr-3"></i> Cardiology
-                        </li>
-                        <li class="flex items-center"><i class="fas fa-stethoscope text-blue-500 mr-3"></i> General
-                            Medicine</li>
-                        <li class="flex items-center"><i class="fas fa-notes-medical text-blue-500 mr-3"></i>
-                            Preventative Care</li>
+                        <li class="flex items-center"><i class="fas fa-heartbeat text-blue-500 mr-3"></i> Cardiology</li>
+                        <li class="flex items-center"><i class="fas fa-stethoscope text-blue-500 mr-3"></i> General Medicine</li>
+                        <li class="flex items-center"><i class="fas fa-notes-medical text-blue-500 mr-3"></i> Preventative Care</li>
                     </ul>
                 </div>
                 <div class="bg-slate-50 p-4 sm:p-6 rounded-xl border border-slate-200">
@@ -43,80 +33,60 @@
                 </div>
             </div>
 
-            <!-- Right Column: Detailed Description and Case Studies -->
             <div class="lg:col-span-2 space-y-10 sm:space-y-12">
-                <!-- Detailed Description -->
                 <div>
-                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-4 border-b pb-2">A Commitment to
-                        Excellence</h2>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-4 border-b pb-2">A Commitment to Excellence</h2>
                     <div class="prose max-w-none text-slate-700 leading-relaxed">
                         <p>
-                            <strong>Placeholder:</strong> Dr. Alexander Rivers' detailed description goes here. This
-                            section will cover his philosophy on patient care, his background, and what drives his
-                            passion for medicine. We can elaborate on his 15+ years of experience and his dedication to
-                            treating over 10,000 patients with personalized, evidence-based approaches.
+                            <strong>Placeholder:</strong> Dr. Alexander Rivers' detailed description goes here. This section will cover his philosophy on patient care, his background, and what drives his passion for medicine. We can elaborate on his 15+ years of experience and his dedication to treating over 10,000 patients with personalized, evidence-based approaches.
                         </p>
                         <p>
-                            More details about his approach to preventative health and long-term wellness can be added
-                            here.
+                            More details about his approach to preventative health and long-term wellness can be added here.
                         </p>
                     </div>
                 </div>
 
-                <!-- Featured Case Studies Section -->
                 <div>
-                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-6 border-b pb-2">Featured Case Studies
-                    </h2>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-6 border-b pb-2">Featured Case Studies</h2>
                     <div class="space-y-8">
-                        <!-- Case Study 1 -->
-                        <div
-                            class="bg-slate-50 p-4 sm:p-6 rounded-xl border border-slate-200 transform transition duration-300 hover:shadow-xl">
-                            <h3 class="text-xl sm:text-2xl font-bold text-slate-800 mb-3">Case Study: The Silent Symptom
-                            </h3>
-                            <div
-                                class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-slate-500 mb-4">
-                                <span><i class="fas fa-tag mr-1"></i> Rare Diagnosis</span>
-                                <span><i class="fas fa-calendar-alt mr-1"></i> Date: Jan 2026</span>
-                            </div>
-                            <div class="flex flex-col md:flex-row gap-6">
-                                <div class="md:w-1/3">
-                                    <img src="https://via.placeholder.com/300x200.png?text=Case+Image+1"
-                                        alt="Case Study Image"
-                                        class="rounded-lg shadow-md w-full aspect-[3/2] object-cover">
+                        {% if case_studies %}
+                            {% for case in case_studies %}
+                                <div class="bg-slate-50 p-4 sm:p-6 rounded-xl border border-slate-200 transform transition duration-300 hover:shadow-xl">
+                                    <h3 class="text-xl sm:text-2xl font-bold text-slate-800 mb-3">{{ case.title }}</h3>
+                                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-slate-500 mb-4">
+                                        {% if case.tag %}
+                                            <span><i class="fas fa-tag mr-1"></i> {{ case.tag }}</span>
+                                        {% endif %}
+                                        <span><i class="fas fa-calendar-alt mr-1"></i> Date: {% if case.occurred_on %}{{ case.occurred_on|date:"M Y" }}{% else %}{{ case.created_at|date:"M Y" }}{% endif %}</span>
+                                    </div>
+                                    <div class="flex flex-col md:flex-row gap-6">
+                                        {% if case.image %}
+                                            <div class="md:w-1/3">
+                                                <img src="{{ case.image.url }}" alt="{{ case.title }}" class="rounded-lg shadow-md w-full h-auto object-contain bg-white max-h-72">
+                                            </div>
+                                            <div class="md:w-2/3 prose-sm max-w-none text-slate-600">
+                                                <p>{{ case.summary|linebreaksbr }}</p>
+                                            </div>
+                                        {% elif case.image_url %}
+                                            <div class="md:w-1/3">
+                                                <img src="{{ case.image_url }}" alt="{{ case.title }}" class="rounded-lg shadow-md w-full h-auto object-contain bg-white max-h-72">
+                                            </div>
+                                            <div class="md:w-2/3 prose-sm max-w-none text-slate-600">
+                                                <p>{{ case.summary|linebreaksbr }}</p>
+                                            </div>
+                                        {% else %}
+                                            <div class="prose-sm max-w-none text-slate-600">
+                                                <p>{{ case.summary|linebreaksbr }}</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                                <div class="md:w-2/3 prose-sm max-w-none text-slate-600">
-                                    <p><strong>Placeholder:</strong> Detailed description of a complex case with rare
-                                        symptoms. We can discuss the diagnostic journey, the challenges faced, and the
-                                        successful treatment outcome. This is a great place to showcase the doctor's
-                                        expertise and problem-solving skills.</p>
-                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="bg-slate-50 p-4 sm:p-6 rounded-xl border border-slate-200">
+                                <p class="text-slate-600">No case studies have been published yet.</p>
                             </div>
-                        </div>
-
-                        <!-- Case Study 2 -->
-                        <div
-                            class="bg-slate-50 p-4 sm:p-6 rounded-xl border border-slate-200 transform transition duration-300 hover:shadow-xl">
-                            <h3 class="text-xl sm:text-2xl font-bold text-slate-800 mb-3">Case Study: Atypical
-                                Presentation</h3>
-                            <div
-                                class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-slate-500 mb-4">
-                                <span><i class="fas fa-tag mr-1"></i> Complex Diagnosis</span>
-                                <span><i class="fas fa-calendar-alt mr-1"></i> Date: Feb 2026</span>
-                            </div>
-                            <div class="flex flex-col md:flex-row gap-6">
-                                <div class="md:w-1/3">
-                                    <img src="https://via.placeholder.com/300x200.png?text=Case+Image+2"
-                                        alt="Case Study Image"
-                                        class="rounded-lg shadow-md w-full aspect-[3/2] object-cover">
-                                </div>
-                                <div class="md:w-2/3 prose-sm max-w-none text-slate-600">
-                                    <p><strong>Placeholder:</strong> Another case study can go here. This one could
-                                        focus on a different specialization, like a challenging cardiology case, to
-                                        highlight the doctor's breadth of knowledge. We can include images, charts, or
-                                        other visual aids to make it more engaging.</p>
-                                </div>
-                            </div>
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
