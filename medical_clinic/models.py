@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from urllib.parse import quote
 
 class Appointment(models.Model):
     class Status(models.TextChoices):
@@ -97,6 +98,54 @@ class Specialist(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ClinicSettings(models.Model):
+    address = models.TextField(blank=True)
+    hours = models.TextField(blank=True)
+    maps_query = models.CharField(max_length=300, blank=True)
+    maps_open_url = models.URLField(blank=True)
+    maps_embed_url = models.URLField(blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Clinic settings"
+        verbose_name_plural = "Clinic settings"
+
+    @classmethod
+    def get_solo(cls) -> "ClinicSettings":
+        obj = cls.objects.first()
+        if obj is None:
+            obj = cls.objects.create(
+                address="123 Health Avenue, Downtown\nYour City, Your State 000000",
+                hours="Mon–Sat: 9:00 AM – 6:00 PM\nSun: Emergency only",
+                maps_query="123 Health Avenue, Downtown",
+            )
+        return obj
+
+    def _maps_query_value(self) -> str:
+        return (self.maps_query or "" or "").strip() or (self.address.splitlines()[0].strip() if self.address else "")
+
+    @property
+    def open_in_maps_url(self) -> str:
+        if self.maps_open_url:
+            return self.maps_open_url
+        q = self._maps_query_value()
+        if not q:
+            return "https://www.google.com/maps"
+        return f"https://www.google.com/maps/search/?api=1&query={quote(q)}"
+
+    @property
+    def embed_url(self) -> str:
+        if self.maps_embed_url:
+            return self.maps_embed_url
+        q = self._maps_query_value()
+        if not q:
+            return ""
+        return f"https://www.google.com/maps?q={quote(q)}&output=embed"
+
+    def __str__(self):
+        return "Clinic settings"
 
 
 class Testimonial(models.Model):

@@ -90,22 +90,34 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-slate-800 text-slate-300 py-10 mt-auto">
+    <footer id="contact" class="bg-slate-800 text-slate-300 py-10 mt-auto">
         <div class="container mx-auto px-4 text-center md:text-left">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
                 <div>
                     <h3 class="text-white text-lg font-bold mb-4">DoClinic</h3>
                     <p class="text-sm leading-relaxed">Providing high-quality medical care with compassion and
                         excellence. Your health is our top priority.</p>
+                    <div class="mt-4 text-sm leading-relaxed">
+                        <p class="font-bold text-white">Clinic Address</p>
+                        {% if clinic.address %}
+                        <div>{{ clinic.address|linebreaksbr }}</div>
+                        {% else %}
+                        <p>123 Health Avenue, Downtown<br>Your City, Your State 000000</p>
+                        {% endif %}
+                    </div>
                 </div>
+
                 <div>
                     <h3 class="text-white text-lg font-bold mb-4">Quick Links</h3>
                     <ul class="space-y-2 text-sm">
                         <li><a href="{% url 'home' %}" class="hover:text-white">Home</a></li>
                         <li><a href="{% url 'about_doctor' %}" class="hover:text-white">About Doctor</a></li>
                         <li><a href="{% url 'services' %}" class="hover:text-white">Services</a></li>
+                        <li><a href="{% url 'book_appointment' %}" class="hover:text-white">Book Appointment</a></li>
+                        <li><a href="#contact" class="hover:text-white">Contact</a></li>
                     </ul>
                 </div>
+
                 <div>
                     <h3 class="text-white text-lg font-bold mb-4">Connect With Us</h3>
                     <div class="flex justify-center md:justify-start space-x-4 text-xl">
@@ -115,8 +127,40 @@
                         <a href="https://wa.me/1234567890" class="hover:text-white transition duration-300"><i
                                 class="fab fa-whatsapp"></i></a>
                     </div>
+                    <div class="mt-4 text-sm">
+                        <p class="font-bold text-white">Hours</p>
+                        {% if clinic.hours %}
+                        <div>{{ clinic.hours|linebreaksbr }}</div>
+                        {% else %}
+                        <p>Mon–Sat: 9:00 AM – 6:00 PM<br>Sun: Emergency only</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
+
+            <div class="bg-slate-900/40 border border-slate-700 rounded-2xl overflow-hidden mb-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2">
+                    <div class="p-6 flex flex-col gap-3">
+                        <h3 class="text-white text-lg font-bold">Find Us On Google Maps</h3>
+                        <p class="text-sm text-slate-300">Tap “Open in Maps” for directions.</p>
+                        <a href="{{ clinic.open_in_maps_url }}" target="_blank" rel="noopener"
+                            class="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-white text-slate-900 font-bold hover:bg-slate-100">
+                            Open in Maps
+                        </a>
+                    </div>
+                    <div class="w-full h-64 md:h-80 lg:h-full">
+                        {% if clinic.embed_url %}
+                        <iframe title="DoClinic Location" class="w-full h-full" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade" src="{{ clinic.embed_url }}"></iframe>
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center text-sm text-slate-300 p-6">
+                            Add a Maps query in admin to show the map here.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
             <hr class="border-slate-700 mb-6">
             <p class="text-xs">&copy; 2026 DoClinic. All rights reserved. Designed for Excellence.</p>
         </div>

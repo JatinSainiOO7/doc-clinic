@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.db import models
 from django.utils import timezone
-from .models import Appointment, CaseStudy, SmsMessage, Specialist
+from .models import Appointment, CaseStudy, SmsMessage, Specialist, ClinicSettings
 from .sms import (
     send_appointment_closed,
     send_appointment_closed_force,
@@ -47,6 +47,28 @@ class SmsMessageAdmin(admin.ModelAdmin):
     )
 
     def has_add_permission(self, request):
+        return False
+
+
+@admin.register(ClinicSettings)
+class ClinicSettingsAdmin(admin.ModelAdmin):
+    list_display = ("id", "updated_at")
+    readonly_fields = ("updated_at", "open_in_maps_url", "embed_url")
+    fields = (
+        "address",
+        "hours",
+        "maps_query",
+        "maps_open_url",
+        "maps_embed_url",
+        "open_in_maps_url",
+        "embed_url",
+        "updated_at",
+    )
+
+    def has_add_permission(self, request):
+        return ClinicSettings.objects.count() == 0
+
+    def has_delete_permission(self, request, obj=None):
         return False
 
 
@@ -321,4 +343,3 @@ class SpecialistAdmin(admin.ModelAdmin):
             '<img src="{}" style="height:48px;width:48px;object-fit:cover;border-radius:9999px;border:1px solid rgba(255,255,255,.12);background:#0f172a;" />',
             src,
         )
-

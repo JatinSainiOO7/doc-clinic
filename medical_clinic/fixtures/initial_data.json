@@ -1,0 +1,50 @@
+[
+  {
+    "model": "medical_clinic.specialist",
+    "pk": 1,
+    "fields": {
+      "name": "Dr. Sonam Rivers",
+      "specialty": "Neurologist",
+      "experience": "12+ years",
+      "description": "Brain and nerve care, migraine management, and neurological evaluations.",
+      "image": "",
+      "image_url": "/static/images/doctor.jpg",
+      "is_published": true,
+      "sort_order": 10,
+      "created_at": "2026-03-25T00:00:00Z",
+      "updated_at": "2026-03-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "medical_clinic.specialist",
+    "pk": 2,
+    "fields": {
+      "name": "Dr. Priya Mehta",
+      "specialty": "Pediatrics",
+      "experience": "Child care",
+      "description": "Infant and child check-ups, vaccinations, and family guidance.",
+      "image": "",
+      "image_url": "/static/images/doctor.jpg",
+      "is_published": true,
+      "sort_order": 20,
+      "created_at": "2026-03-25T00:00:00Z",
+      "updated_at": "2026-03-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "medical_clinic.specialist",
+    "pk": 3,
+    "fields": {
+      "name": "Dr. Michael Chen",
+      "specialty": "General Medicine",
+      "experience": "Primary care",
+      "description": "Routine check-ups, follow-ups, and coordinated specialist referrals.",
+      "image": "",
+      "image_url": "/static/images/doctor.jpg",
+      "is_published": true,
+      "sort_order": 30,
+      "created_at": "2026-03-25T00:00:00Z",
+      "updated_at": "2026-03-25T00:00:00Z"
+    }
+  }
+]
