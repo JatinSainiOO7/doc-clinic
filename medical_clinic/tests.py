@@ -5,7 +5,12 @@ from datetime import date, time, timedelta
 
 from .forms import AppointmentForm
 from .models import Appointment, SmsMessage
-from .sms import send_appointment_closed, send_appointment_confirmation
+from .sms import (
+    send_appointment_closed,
+    send_appointment_closed_force,
+    send_appointment_confirmation,
+    send_appointment_confirmation_force,
+)
 
 # Create your tests here.
 
@@ -135,3 +140,37 @@ class AppointmentSmsTests(TestCase):
         self.assertEqual(SmsMessage.objects.count(), 1)
         self.assertEqual(sms.kind, SmsMessage.Kind.APPOINTMENT_CLOSED)
         self.assertEqual(sms.status, SmsMessage.Status.SENT)
+
+    def test_force_confirmation_sends_again(self):
+        d = timezone.localdate() + timedelta(days=1)
+        appt = Appointment.objects.create(
+            full_name="Test",
+            phone="999",
+            email="t@example.com",
+            date_of_birth=date(2000, 1, 1),
+            preferred_date=d,
+            preferred_time=time(10, 0),
+        )
+
+        sms1 = send_appointment_confirmation(appt)
+        self.assertIsNotNone(sms1)
+        sms2 = send_appointment_confirmation_force(appt)
+        self.assertIsNotNone(sms2)
+        self.assertEqual(SmsMessage.objects.filter(kind=SmsMessage.Kind.APPOINTMENT_CONFIRMATION).count(), 2)
+
+    def test_force_closure_sends_again(self):
+        d = timezone.localdate() + timedelta(days=1)
+        appt = Appointment.objects.create(
+            full_name="Test",
+            phone="999",
+            email="t@example.com",
+            date_of_birth=date(2000, 1, 1),
+            preferred_date=d,
+            preferred_time=time(10, 0),
+        )
+
+        sms1 = send_appointment_closed(appt)
+        self.assertIsNotNone(sms1)
+        sms2 = send_appointment_closed_force(appt)
+        self.assertIsNotNone(sms2)
+        self.assertEqual(SmsMessage.objects.filter(kind=SmsMessage.Kind.APPOINTMENT_CLOSED).count(), 2)

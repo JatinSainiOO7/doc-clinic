@@ -78,3 +78,41 @@ class CaseStudy(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Specialist(models.Model):
+    name = models.CharField(max_length=120)
+    specialty = models.CharField(max_length=120, blank=True)
+    experience = models.CharField(max_length=80, blank=True)
+    description = models.TextField(blank=True)
+    image = models.ImageField(upload_to="specialists/", blank=True, null=True)
+    image_url = models.URLField(blank=True)
+    is_published = models.BooleanField(default=True)
+    sort_order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["sort_order", "name", "-created_at"]
+
+    def __str__(self):
+        return self.name
+
+
+class Testimonial(models.Model):
+    name = models.CharField(max_length=120)
+    role = models.CharField(max_length=120, blank=True)
+    rating = models.PositiveSmallIntegerField(default=5)
+    quote = models.TextField(blank=True)
+    avatar = models.ImageField(upload_to="testimonials/", blank=True, null=True)
+    avatar_url = models.URLField(blank=True)
+    is_published = models.BooleanField(default=True)
+    sort_order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["sort_order", "-created_at"]
+
+    def __str__(self):
+        return self.name

@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col">
     <!-- Navbar -->
     <nav class="bg-white shadow-lg sticky top-0 z-50">
@@ -23,21 +25,26 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden md:flex items-center space-x-8 text-sm font-semibold uppercase tracking-wider text-slate-600">
+                <div
+                    class="hidden md:flex items-center space-x-8 text-sm font-semibold uppercase tracking-wider text-slate-600">
                     <a href="{% url 'home' %}" class="hover:text-blue-600 transition duration-300">Home</a>
-                    <a href="{% url 'about_doctor' %}" class="hover:text-blue-600 transition duration-300">About Doctor</a>
+                    <a href="{% url 'about_doctor' %}" class="hover:text-blue-600 transition duration-300">About
+                        Doctor</a>
                     <a href="{% url 'services' %}" class="hover:text-blue-600 transition duration-300">Services</a>
-                    <a href="{% url 'book_appointment' %}" class="hover:text-blue-600 transition duration-300">Book Appointment</a>
+                    <a href="{% url 'book_appointment' %}" class="hover:text-blue-600 transition duration-300">Book
+                        Appointment</a>
                     <a href="#contact" class="hover:text-blue-600 transition duration-300">Contact</a>
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="hidden md:flex items-center space-x-4">
-                    <a href="tel:+1234567890" class="flex items-center space-x-2 bg-blue-600 text-white px-5 py-2.5 rounded-full font-bold hover:bg-blue-700 transition duration-300">
+                    <a href="tel:+1234567890"
+                        class="flex items-center space-x-2 bg-blue-600 text-white px-5 py-2.5 rounded-full font-bold hover:bg-blue-700 transition duration-300">
                         <i class="fas fa-phone-alt"></i>
                         <span>Call Now</span>
                     </a>
-                    <a href="https://wa.me/1234567890" class="flex items-center space-x-2 bg-emerald-500 text-white px-5 py-2.5 rounded-full font-bold hover:bg-emerald-600 transition duration-300">
+                    <a href="https://wa.me/1234567890"
+                        class="flex items-center space-x-2 bg-emerald-500 text-white px-5 py-2.5 rounded-full font-bold hover:bg-emerald-600 transition duration-300">
                         <i class="fab fa-whatsapp"></i>
                         <span>WhatsApp</span>
                     </a>
@@ -45,9 +52,35 @@
 
                 <!-- Mobile Menu Toggle (Simplified for now) -->
                 <div class="md:hidden">
-                    <button class="text-slate-600 focus:outline-none">
-                        <i class="fas fa-bars text-2xl"></i>
+                    <button id="mobile-menu-button"
+                        class="text-slate-600 focus:outline-none rounded-xl p-2 hover:shadow-lg hover:bg-slate-50 transition"
+                        aria-controls="mobile-menu" aria-expanded="false" type="button">
+                        <i class="fas fa-bars text-2xl" aria-hidden="true"></i>
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden hidden border-t border-slate-200 bg-white">
+            <div class="container mx-auto px-4 md:px-6 py-4 space-y-4">
+                <div class="flex flex-col gap-3 text-sm font-semibold uppercase tracking-wider text-slate-700">
+                    <a href="{% url 'home' %}" class="py-2 hover:text-blue-600">Home</a>
+                    <a href="{% url 'about_doctor' %}" class="py-2 hover:text-blue-600">About Doctor</a>
+                    <a href="{% url 'services' %}" class="py-2 hover:text-blue-600">Services</a>
+                    <a href="{% url 'book_appointment' %}" class="py-2 hover:text-blue-600">Book Appointment</a>
+                    <a href="#contact" class="py-2 hover:text-blue-600">Contact</a>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <a href="tel:+1234567890"
+                        class="flex items-center justify-center space-x-2 bg-blue-600 text-white px-5 py-3 rounded-full font-bold hover:bg-blue-700 transition duration-300">
+                        <i class="fas fa-phone-alt" aria-hidden="true"></i>
+                        <span>Call Now</span>
+                    </a>
+                    <a href="https://wa.me/1234567890"
+                        class="flex items-center justify-center space-x-2 bg-emerald-500 text-white px-5 py-3 rounded-full font-bold hover:bg-emerald-600 transition duration-300">
+                        <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                        <span>WhatsApp</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -62,7 +95,8 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
                 <div>
                     <h3 class="text-white text-lg font-bold mb-4">DoClinic</h3>
-                    <p class="text-sm leading-relaxed">Providing high-quality medical care with compassion and excellence. Your health is our top priority.</p>
+                    <p class="text-sm leading-relaxed">Providing high-quality medical care with compassion and
+                        excellence. Your health is our top priority.</p>
                 </div>
                 <div>
                     <h3 class="text-white text-lg font-bold mb-4">Quick Links</h3>
@@ -76,8 +110,10 @@
                     <h3 class="text-white text-lg font-bold mb-4">Connect With Us</h3>
                     <div class="flex justify-center md:justify-start space-x-4 text-xl">
                         <a href="#" class="hover:text-white transition duration-300"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="hover:text-white transition duration-300"><i class="fab fa-instagram"></i></a>
-                        <a href="https://wa.me/1234567890" class="hover:text-white transition duration-300"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" class="hover:text-white transition duration-300"><i
+                                class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me/1234567890" class="hover:text-white transition duration-300"><i
+                                class="fab fa-whatsapp"></i></a>
                     </div>
                 </div>
             </div>
@@ -85,5 +121,8 @@
             <p class="text-xs">&copy; 2026 DoClinic. All rights reserved. Designed for Excellence.</p>
         </div>
     </footer>
+
+    <script src="{% static 'js/nav.js' %}"></script>
 </body>
+
 </html>

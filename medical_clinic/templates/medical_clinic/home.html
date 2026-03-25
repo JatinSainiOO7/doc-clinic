@@ -1,6 +1,5 @@
 {% extends "medical_clinic/base.html" %}
 {% load static %}
-{% load static %}
 
 {% block title %}Welcome to DoClinic - Your Health, Our Priority{% endblock %}
 
@@ -127,19 +126,57 @@
 </section>
 
 <!-- Additional Sections Placeholder -->
-<section id="about" class="py-24 bg-slate-50">
-    <div class="container mx-auto px-4 text-center">
-        <h2 class="text-4xl font-bold mb-8">Meet Our Specialist</h2>
-        <p class="text-slate-600 max-w-2xl mx-auto italic leading-relaxed">"Our mission is to provide personalized,
-            high-quality care on an as-needed or preventative basis. We have created a practice that we believe in and
-            choose for our own family members."</p>
+<section id="about" class="py-16 bg-slate-50">
+    <div class="container mx-auto px-4 md:px-6">
+        <div class="text-center mb-12 bg-white border-4 border-slate-200 p-6 rounded-2xl shadow-xl">
+            <h2 class="text-4xl font-extrabold text-slate-900">Meet Our Specialist</h2>
+            <p class="text-lg text-slate-600 mt-4 max-w-2xl mx-auto">"Our mission is to provide personalized,
+                high-quality care on an as-needed or preventative basis. We have created a practice that we believe in
+                and choose for our own family members."</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {% if specialists %}
+            {% for sp in specialists %}
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden">
+                <div class="bg-slate-900/5 p-6 flex flex-col items-center gap-3 text-center">
+                    {% if sp.image %}
+                    <img src="{{ sp.image.url }}" alt="{{ sp.name }}" class="w-16 h-16 rounded-full object-cover">
+                    {% elif sp.image_url %}
+                    <img src="{{ sp.image_url }}" alt="{{ sp.name }}" class="w-16 h-16 rounded-full object-cover">
+                    {% else %}
+                    <img src="{% static 'images/doctor.jpg' %}" alt="{{ sp.name }}"
+                        class="w-16 h-16 rounded-full object-cover">
+                    {% endif %}
+                    <p class="text-lg font-extrabold text-slate-900 leading-snug">{{ sp.name }}</p>
+                    <p class="text-sm text-slate-600">
+                        {% if sp.specialty %}{{ sp.specialty }}{% endif %}
+                        {% if sp.experience %}
+                        {% if sp.specialty %} • {% endif %}{{ sp.experience }}
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="p-6">
+                    <p class="text-slate-600">{{ sp.description }}</p>
+                    <a href="{% url 'book_appointment' %}"
+                        class="inline-block mt-4 px-4 py-2 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700">view
+                        details</a>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div
+                class="md:col-span-3 bg-white rounded-2xl border border-slate-200 shadow-md p-6 text-center text-slate-600">
+                Add specialists from the admin panel to show them here.
+            </div>
+            {% endif %}
+        </div>
     </div>
 </section>
 
 <!-- Testimonials Section -->
-<section class="bg-slate-50 py-20">
+<section class="bg-slate-50 py-12">
     <div class="container mx-auto px-4 md:px-6">
-        <div class="text-center mb-12">
+        <div class="text-center mb-6 bg-white border-4 border-slate-200 px-6 pt-3 pb-6 rounded-2xl shadow-xl">
             <h2 class="text-4xl font-extrabold text-slate-900">What Our Patients Say</h2>
             <p class="text-lg text-slate-600 mt-4 max-w-2xl mx-auto">Real stories from our community, showcasing our
                 commitment to exceptional care.</p>
@@ -161,10 +198,8 @@
                             class="fas fa-star"></i><i class="fas fa-star"></i>
                     </div>
                 </div>
-                <p class="text-slate-600 italic leading-relaxed">
-                    "Dr. Rivers is not only an expert in his field but also a compassionate listener. I finally feel
-                    like my health is in the best hands."
-                </p>
+                <p class="text-slate-600 italic leading-relaxed">"Dr. Rivers is not only an expert in his field but also
+                    a compassionate listener. I finally feel like my health is in the best hands."</p>
             </div>
 
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200">
@@ -182,10 +217,8 @@
                             class="fas fa-star"></i><i class="fas fa-star"></i>
                     </div>
                 </div>
-                <p class="text-slate-600 italic leading-relaxed">
-                    "The booking process was seamless, and the clinic staff were incredibly welcoming. A truly
-                    stress-free experience from start to finish."
-                </p>
+                <p class="text-slate-600 italic leading-relaxed">"The booking process was seamless, and the clinic staff
+                    were incredibly welcoming. A truly stress-free experience from start to finish."</p>
             </div>
 
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200">
@@ -203,10 +236,8 @@
                             class="fas fa-star"></i><i class="fas fa-star"></i>
                     </div>
                 </div>
-                <p class="text-slate-600 italic leading-relaxed">
-                    "I've never had a doctor explain things so clearly. The level of care and attention to detail here
-                    is unmatched. Highly recommended!"
-                </p>
+                <p class="text-slate-600 italic leading-relaxed">"I've never had a doctor explain things so clearly. The
+                    level of care and attention to detail here is unmatched. Highly recommended!"</p>
             </div>
 
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200">
@@ -224,10 +255,8 @@
                             class="fas fa-star"></i><i class="far fa-star"></i>
                     </div>
                 </div>
-                <p class="text-slate-600 italic leading-relaxed">
-                    "The staff was kind and patient with my child. The appointment was smooth and the instructions
-                    were very clear."
-                </p>
+                <p class="text-slate-600 italic leading-relaxed">"The staff was kind and patient with my child. The
+                    appointment was smooth and the instructions were very clear."</p>
             </div>
 
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200">
@@ -245,10 +274,8 @@
                             class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
                     </div>
                 </div>
-                <p class="text-slate-600 italic leading-relaxed">
-                    "Clean facility, quick check-in, and the doctor answered all my questions. I felt taken care of
-                    from start to finish."
-                </p>
+                <p class="text-slate-600 italic leading-relaxed">"Clean facility, quick check-in, and the doctor
+                    answered all my questions. I felt taken care of from start to finish."</p>
             </div>
         </div>
 </section>

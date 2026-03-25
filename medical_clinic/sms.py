@@ -44,7 +44,11 @@ def send_sms(*, to_phone: str, body: str, kind: str, appointment: Appointment | 
 
 
 def send_appointment_confirmation(appointment: Appointment) -> SmsMessage | None:
-    if appointment.confirmation_sms_sent_at:
+    return _send_appointment_confirmation(appointment, force=False)
+
+
+def _send_appointment_confirmation(appointment: Appointment, *, force: bool) -> SmsMessage | None:
+    if not force and appointment.confirmation_sms_sent_at:
         return None
     if not appointment.phone:
         return None
@@ -67,8 +71,16 @@ def send_appointment_confirmation(appointment: Appointment) -> SmsMessage | None
     return sms
 
 
+def send_appointment_confirmation_force(appointment: Appointment) -> SmsMessage | None:
+    return _send_appointment_confirmation(appointment, force=True)
+
+
 def send_appointment_closed(appointment: Appointment) -> SmsMessage | None:
-    if appointment.closure_sms_sent_at:
+    return _send_appointment_closed(appointment, force=False)
+
+
+def _send_appointment_closed(appointment: Appointment, *, force: bool) -> SmsMessage | None:
+    if not force and appointment.closure_sms_sent_at:
         return None
     if not appointment.phone:
         return None
@@ -85,3 +97,6 @@ def send_appointment_closed(appointment: Appointment) -> SmsMessage | None:
         appointment.save(update_fields=["closure_sms_sent_at"])
     return sms
 
+
+def send_appointment_closed_force(appointment: Appointment) -> SmsMessage | None:
+    return _send_appointment_closed(appointment, force=True)

@@ -2,11 +2,16 @@ from django.contrib import messages
 from django.shortcuts import redirect, render
 
 from .forms import AppointmentForm
-from .models import CaseStudy
+from .models import CaseStudy, Specialist
 from .sms import send_appointment_confirmation
 
 def home(request):
-    return render(request, 'medical_clinic/home.html')
+    specialists = Specialist.objects.filter(is_published=True).order_by("sort_order", "name")
+    return render(
+        request,
+        'medical_clinic/home.html',
+        {"specialists": specialists},
+    )
 
 def about_doctor(request):
     case_studies = CaseStudy.objects.filter(is_published=True)

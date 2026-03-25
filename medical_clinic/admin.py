@@ -3,13 +3,51 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.db import models
 from django.utils import timezone
-from .models import Appointment, CaseStudy
-from .sms import send_appointment_closed
+from .models import Appointment, CaseStudy, SmsMessage, Specialist
+from .sms import (
+    send_appointment_closed,
+    send_appointment_closed_force,
+    send_appointment_confirmation,
+    send_appointment_confirmation_force,
+)
 
 
 admin.site.site_header = "DoClinic Admin"
 admin.site.site_title = "DoClinic Admin"
 admin.site.index_title = "Clinic Management"
+
+
+@admin.register(SmsMessage)
+class SmsMessageAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "kind",
+        "status",
+        "provider",
+        "to_phone",
+        "appointment",
+        "created_at",
+        "sent_at",
+    )
+    list_filter = ("kind", "status", "provider", "created_at")
+    search_fields = ("to_phone", "body", "appointment__full_name", "appointment__id")
+    ordering = ("-created_at",)
+    list_per_page = 50
+
+    readonly_fields = (
+        "to_phone",
+        "body",
+        "kind",
+        "status",
+        "provider",
+        "error",
+        "appointment",
+        "created_at",
+        "sent_at",
+    )
+
+    def has_add_permission(self, request):
+        return False
 
 
 class AppointmentDayFilter(admin.SimpleListFilter):
@@ -59,6 +97,18 @@ class AppointmentStatusFilter(admin.SimpleListFilter):
         return queryset.filter(status=value)
 
 
+class SmsMessageInline(admin.TabularInline):
+    model = SmsMessage
+    extra = 0
+    can_delete = False
+    fields = ("created_at", "kind", "status", "provider", "to_phone", "sent_at")
+    readonly_fields = fields
+    ordering = ("-created_at",)
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
     date_hierarchy = "preferred_date"
@@ -76,9 +126,10 @@ class AppointmentAdmin(admin.ModelAdmin):
     )
     list_filter = (AppointmentStatusFilter, AppointmentDayFilter, "preferred_date", "created_at")
     search_fields = ("full_name", "phone", "email", "reason", "message")
-    readonly_fields = ("created_at",)
+    readonly_fields = ("created_at", "closed_at", "confirmation_sms_sent_at", "closure_sms_sent_at")
     ordering = ("preferred_date", "preferred_time", "-created_at")
     list_per_page = 50
+    inlines = [SmsMessageInline]
 
     @admin.display(description="Status")
     def status_badge(self, obj):
@@ -97,7 +148,41 @@ class AppointmentAdmin(admin.ModelAdmin):
             "Open",
         )
 
-    actions = ["mark_completed_and_notify", "mark_no_show"]
+    actions = [
+        "resend_confirmation_sms",
+        "send_closing_sms_now",
+        "mark_completed_and_notify",
+        "mark_no_show",
+    ]
+
+    @admin.action(description="Resend confirmation SMS")
+    def resend_confirmation_sms(self, request, queryset):
+        sent = 0
+        skipped = 0
+        for appt in queryset:
+            sms = send_appointment_confirmation_force(appt)
+            if sms is None:
+                skipped += 1
+                continue
+            if sms.status == SmsMessage.Status.SENT:
+                sent += 1
+        self.message_user(request, f"Sent {sent} confirmation SMS. Skipped {skipped}.")
+
+    @admin.action(description="Send closing SMS now")
+    def send_closing_sms_now(self, request, queryset):
+        sent = 0
+        skipped = 0
+        for appt in queryset:
+            if appt.status != Appointment.Status.COMPLETED:
+                skipped += 1
+                continue
+            sms = send_appointment_closed_force(appt)
+            if sms is None:
+                skipped += 1
+                continue
+            if sms.status == SmsMessage.Status.SENT:
+                sent += 1
+        self.message_user(request, f"Sent {sent} closing SMS. Skipped {skipped}.")
 
     def save_model(self, request, obj, form, change):
         previous_status = None
@@ -188,3 +273,52 @@ class CaseStudyAdmin(admin.ModelAdmin):
             '<img src="{}" style="height:48px;width:80px;object-fit:contain;background:#0f172a;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:4px;" />',
             src,
         )
+
+
+@admin.register(Specialist)
+class SpecialistAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "image_preview",
+        "name",
+        "specialty",
+        "experience",
+        "is_published",
+        "sort_order",
+        "updated_at",
+    )
+    list_filter = ("is_published", "specialty")
+    search_fields = ("name", "specialty", "description")
+    list_editable = ("sort_order", "is_published")
+    ordering = ("sort_order", "name")
+
+    readonly_fields = ("image_preview",)
+    fields = (
+        "name",
+        "specialty",
+        "experience",
+        "image",
+        "image_url",
+        "image_preview",
+        "description",
+        "is_published",
+        "sort_order",
+    )
+
+    @admin.display(description="Image")
+    def image_preview(self, obj):
+        src = None
+        if getattr(obj, "image", None):
+            try:
+                src = obj.image.url
+            except ValueError:
+                src = None
+        if not src and getattr(obj, "image_url", None):
+            src = obj.image_url
+        if not src:
+            return "-"
+        return format_html(
+            '<img src="{}" style="height:48px;width:48px;object-fit:cover;border-radius:9999px;border:1px solid rgba(255,255,255,.12);background:#0f172a;" />',
+            src,
+        )
+
