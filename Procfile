@@ -1,1 +1,1 @@
-web: gunicorn doc_clinic.wsgi --log-file -
+web: gunicorn doc_clinic.wsgi:application --bind 0.0.0.0:$PORT
