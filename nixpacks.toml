@@ -10,7 +10,7 @@ cmds = [
 [phases.build]
 cmds = [
   'npm run build',
-  'python manage.py collectstatic --noinput'
+  'python manage.py collectstatic --noinput --clear'
 ]
 
 [start]
